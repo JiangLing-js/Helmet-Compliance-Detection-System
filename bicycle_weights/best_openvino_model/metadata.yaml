@@ -1,0 +1,19 @@
+description: Ultralytics YOLOv8n model trained on data.yaml
+author: Ultralytics
+date: '2024-06-05T18:37:57.678552'
+version: 8.1.42
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: detect
+batch: 1
+imgsz:
+- 640
+- 640
+names:
+  0: car
+  1: threewheel
+  2: bus
+  3: truck
+  4: motorbike
+  5: van

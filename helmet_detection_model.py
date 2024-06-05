@@ -1,7 +1,8 @@
 from ultralytics import YOLO
 import cv2
+import time
 
-
+start = time.time()
 # 电动车检测模型
 model = YOLO(r"bicycle_weights\best.pt")  # load a custom model
 # 测试图片集
@@ -72,3 +73,5 @@ for i in range(length):
 # 输出结果
 for result in final_results:
     print(result)
+
+print("总时长", time.time()-start)
