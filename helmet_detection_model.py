@@ -8,13 +8,14 @@ dataset_path = r"E:\Safety-Helmet-Wearing-Dataset\bicycle\merged_dataset\images\
 test_images = [os.path.join(dataset_path, img) for img in os.listdir(dataset_path) if img.endswith(('.png', '.jpg', '.jpeg'))]
 length = len(test_images)
 
-start = time.time()
+# start = time.time()
 # 电动车检测模型
 model = YOLO(r"bicycle_weights\best.pt")  # load a custom model
 # # 测试图片集
 # test_images = [r"test_image_1.jpg",
 #                  r"test_image_2.png"]
 # length = len(test_images)
+start = time.time()
 results = model(test_images)  # return a list of Results objects
 
 

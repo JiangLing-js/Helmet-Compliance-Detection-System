@@ -11,34 +11,56 @@ import os
 dataset_path = r"E:\Safety-Helmet-Wearing-Dataset\bicycle\merged_dataset\images\train"
 test_images = [os.path.join(dataset_path, img) for img in os.listdir(dataset_path) if img.endswith(('.png', '.jpg', '.jpeg'))]
 length = len(test_images)
-start = time.time()
+
 core = Core()
 # 电动车检测openvino路径
 model_path = Path("bicycle_weights/best_openvino_model/best.xml")
-model = YOLO("bicycle_weights/best_openvino_model/")
+# model = YOLO("bicycle_weights/best_openvino_model/")
 # 电动车检测模型
-# model = YOLO(r"bicycle_weights\best.pt")  # load a custom model
+model = YOLO(r"bicycle_weights\best.pt")  # load a custom model
+ov_model = core.read_model(model_path)
+compiled_ov_model = core.compile_model(ov_model, "CPU")
 # if not model_path.exists():
 # 	model.export(format="openvino", dynamic=True, half=False)
 
 
 # 头盔检查模型
 model_path_helmet = Path("runs/detect/train7/weights/best_openvino_model/best.xml")
-model_helmet = YOLO("runs/detect/train7/weights/best_openvino_model/")
-# model_helmet = YOLO(r"runs\detect\train7\weights\best.pt")
+# model_helmet = YOLO("runs/detect/train7/weights/best_openvino_model/")
+model_helmet = YOLO(r"runs\detect\train7\weights\best.pt")
+ov_model_helmet = core.read_model(model_path_helmet)
+compiled_ov_model_helmet = core.compile_model(ov_model_helmet, "CPU")
 # if not model_path_helmet.exists():
 # 	model_helmet.export(format="openvino", dynamic=True, half=False)
 
+import torch
 
+
+def infer(*args):
+    result = compiled_ov_model(args)[0]
+    return torch.from_numpy(result)
+
+
+model.predictor.inference = infer
+
+
+def infer_(*args):
+    result = compiled_ov_model_helmet(args)[0]
+    return torch.from_numpy(result)
+
+
+model_helmet.predictor.inference = infer_
+
+start = time.time()
 # 测试图片集
 # test_images = [r"test_image_1.jpg", r"test_image_2.png"]
 # length = len(test_images)
-results = model(test_images)  # return a list of Results objects
+results = model(test_images, device="cpu")  # return a list of Results objects
 
 # 函数用于检测头盔, 并修改图片
 def detect_helmet(cropped_image):
     # 假设model_helmet是已经加载的模型，并对输入的图像进行头盔检测
-    result = model_helmet(cropped_image)
+    result = model_helmet(cropped_image, device="cpu")
     boxes = result[0].boxes
     helmet_detections = []
 
