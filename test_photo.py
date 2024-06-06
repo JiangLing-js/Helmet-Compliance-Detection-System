@@ -3,10 +3,8 @@ import cv2
 import time
 import os
 
-# 获取图片路径列表
-dataset_path = r"E:\Safety-Helmet-Wearing-Dataset\bicycle\merged_dataset\images\train"
-test_images = [os.path.join(dataset_path, img) for img in os.listdir(dataset_path) if img.endswith(('.png', '.jpg', '.jpeg'))]
-# test_images = ["test.jpg", "test_image_1.jpg", "test_image_2.png"]
+
+test_images = ["test.jpg", "test_image_1.jpg", "test_image_2.png"]
 length = len(test_images)
 
 # start = time.time()
@@ -18,10 +16,28 @@ model = YOLO(r"bicycle_weights\best.pt")  # load a custom model
 # length = len(test_images)
 start = time.time()
 results = model(test_images)  # return a list of Results objects
+for result in results:
+    boxes = result.boxes  # Boxes object for bounding box outputs
+    masks = result.masks  # Masks object for segmentation masks outputs
+    keypoints = result.keypoints  # Keypoints object for pose outputs
+    probs = result.probs  # Probs object for classification outputs
+    obb = result.obb  # Oriented boxes object for OBB outputs
+    result.show()  # display to screen
+    result.save(filename=f"电动车检测.jpg")  # save to disk
 
 
 # 头盔检查模型
 model_helmet = YOLO(r"runs\detect\train7\weights\best.pt")
+temps = model_helmet(test_images)
+for result in temps:
+    boxes = result.boxes  # Boxes object for bounding box outputs
+    masks = result.masks  # Masks object for segmentation masks outputs
+    keypoints = result.keypoints  # Keypoints object for pose outputs
+    probs = result.probs  # Probs object for classification outputs
+    obb = result.obb  # Oriented boxes object for OBB outputs
+    result.show()  # display to screen
+    result.save(filename=f"头盔检测.jpg")  # save to disk
+
 # 函数用于检测头盔, 并修改图片
 def detect_helmet(cropped_image):
     # 假设model_helmet是已经加载的模型，并对输入的图像进行头盔检测
@@ -76,7 +92,7 @@ for i in range(length):
                 'scooter_bbox': (x1, y1, x2, y2),
                 'helmet_detections': helmet_detections
             })
-    # cv2.imwrite(f'annotated_image_{i}.jpg', original_image)
+    cv2.imwrite(f'annotated_image_{i}.jpg', original_image)
 
 # 计算FPS
 end = time.time()
