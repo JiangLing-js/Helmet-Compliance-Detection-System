@@ -4,9 +4,15 @@ import ipywidgets as widgets
 import openvino as ov
 from pathlib import Path
 from openvino.runtime import Core, Model
-core = Core()
 import time
+import os
+
+# 获取图片路径列表
+dataset_path = r"E:\Safety-Helmet-Wearing-Dataset\bicycle\merged_dataset\images\train"
+test_images = [os.path.join(dataset_path, img) for img in os.listdir(dataset_path) if img.endswith(('.png', '.jpg', '.jpeg'))]
+length = len(test_images)
 start = time.time()
+core = Core()
 # 电动车检测openvino路径
 model_path = Path("bicycle_weights/best_openvino_model/best.xml")
 model = YOLO("bicycle_weights/best_openvino_model/")
@@ -25,8 +31,8 @@ model_helmet = YOLO("runs/detect/train7/weights/best_openvino_model/")
 
 
 # 测试图片集
-test_images = [r"test_image_1.jpg", r"test_image_2.png"]
-length = len(test_images)
+# test_images = [r"test_image_1.jpg", r"test_image_2.png"]
+# length = len(test_images)
 results = model(test_images)  # return a list of Results objects
 
 # 函数用于检测头盔, 并修改图片
@@ -66,7 +72,7 @@ final_results = []
 for i in range(length):
     original_image = cv2.imread(test_images[i])
     boxes = results[i].boxes  # Boxes object for bounding box outputs
-    print("boxes:", boxes)
+    # print("boxes:", boxes)
     # print(boxes.cls)
     for t, bbox in enumerate(boxes.xyxy):
         if int(boxes.cls[t]) == 4: # 筛选cls为电瓶车的结果
@@ -83,10 +89,17 @@ for i in range(length):
                 'scooter_bbox': (x1, y1, x2, y2),
                 'helmet_detections': helmet_detections
             })
-    cv2.imwrite(f'annotated_image_{i}.jpg', original_image)
+    # cv2.imwrite(f'annotated_image_{i}.jpg', original_image)
 
-# 输出结果
-for result in final_results:
-    print(result)
+# 计算FPS
+end = time.time()
+total_time = end - start
+fps = length / total_time
+print(f"FPS: {fps:.2f}")
+print("总时长", total_time)
 
-print("总时长", time.time()-start)
+# # 输出结果
+# for result in final_results:
+#     print(result)
+
+# print("总时长", time.time()-start)
