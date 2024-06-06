@@ -16,3 +16,15 @@ This project aims to develop a deep learning model based on YOLOv8 to detect hel
 
 ### Expected Outcomes
 The Helmet Compliance Detection System is expected to significantly increase helmet usage among electric scooter drivers, thereby reducing the risk of injuries and enhancing overall road safety.
+
+### Gallery
+Below are some visualizations of the system in action:
+
+![Electric Scooter Detection](电动车检测.jpg)
+*Detection of electric scooters in an urban environment.*
+
+![Helmet Detection](头盔检测.jpg)
+*Accurate identification of helmets on scooter drivers.*
+
+![Annotated Output](annotated_image_0.jpg)
+*Annotated real-time detection highlighting compliant and non-compliant drivers.*
